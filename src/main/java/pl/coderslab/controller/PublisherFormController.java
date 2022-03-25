@@ -44,27 +44,37 @@ public class PublisherFormController {
         return "redirect:/form/publishers";
     }
 
+//    @GetMapping("/form/publisher/delete/{id}")
+//    private String processDeleteForm(@PathVariable Long id){
+////        Publisher publisher = publisherService.findByIdWithBooks(id);
+//
+//        Publisher publisher = publisherService.findById(id);
+////        List<Book> books = publisher.getBooks();
+//
+//        List<Book> books = bookService.findWherePublisher(publisher);
+//
+//        List<Book> booksToDel = new ArrayList<>();
+//        for (Book book : books) {
+//            booksToDel.add(book);
+//        }
+//
+////        List<Book> books = publisher.getBooks();
+////        for (Book book : books) {
+////            bookService.deleteById(book.getId());
+//////        }
+////        booksToDel.stream()
+////                .forEach(book -> bookService.deleteById(book.getId()));
+//
+//        books.stream()
+//                .forEach(book -> bookService.deleteById(book.getId()));
+//        publisherService.deleteById(id);
+//        return "redirect:/form/publishers";
+//    }
+
     @GetMapping("/form/publisher/delete/{id}")
     private String processDeleteForm(@PathVariable Long id){
-//        Publisher publisher = publisherService.findByIdWithBooks(id);
-
         Publisher publisher = publisherService.findById(id);
-//        List<Book> books = publisher.getBooks();
-
         List<Book> books = bookService.findWherePublisher(publisher);
-
-        List<Book> booksToDel = new ArrayList<>();
-        for (Book book : books) {
-            booksToDel.add(book);
-        }
-
-//        List<Book> books = publisher.getBooks();
-//        for (Book book : books) {
-//            bookService.deleteById(book.getId());
-////        }
-//        booksToDel.stream()
-//                .forEach(book -> bookService.deleteById(book.getId()));
-
         books.stream()
                 .forEach(book -> bookService.deleteById(book.getId()));
         publisherService.deleteById(id);
@@ -87,6 +97,13 @@ public class PublisherFormController {
 ////            logger.warning("book >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " + book);
 //            bookService.update(book);
 //        }
+
+        bookService.findWherePublisher(publisher).stream()
+                .filter(book -> !publisher.getBooks().contains(book))
+                .forEach(book -> {
+                            book.setPublisher(null);
+                            bookService.update(book);
+                });
 
         publisher.getBooks().stream()
                 .forEach(book -> {
